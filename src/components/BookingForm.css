@@ -1,0 +1,52 @@
+.form-panel {
+  flex: 0 0 35%;
+  max-width: 100%;
+  box-sizing: border-box;
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-step {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-step label {
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.form-step input,
+.form-step textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.step-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.step-buttons button,
+.form-step button {
+  padding: 0.6rem 1.2rem;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.step-buttons button:hover,
+.form-step button:hover {
+  background-color: #295dc5;
+}
