@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import "./LandingPage.css";
 import BookingForm from "../../components/BookingForm";
+import CalendarPanel from "../../components/CalendarPanel/CalendarPanel";
 
 type Availability = { [day: number]: boolean };
 
@@ -54,7 +55,8 @@ const artists: Artist[] = [
     name: "Mick",
     avatar: "https://i.pravatar.cc/40?img=7",
     availability: { 2: true, 9: true, 19: true, 26: true },
-  }, {
+  },
+  {
     id: 8,
     name: "Ben",
     avatar: "https://i.pravatar.cc/40?img=8",
@@ -67,10 +69,7 @@ export default function LandingPage() {
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
 
   const today = new Date();
-  const year = today.getFullYear();
-  const monthIndex = today.getMonth(); // 0-based
   const monthName = today.toLocaleString("default", { month: "long" });
-  const numDays = new Date(year, monthIndex + 1, 0).getDate();
 
   return (
     <div className="landing-container">
@@ -82,51 +81,13 @@ export default function LandingPage() {
       </div>
 
       <div className="booking-layout">
-        {/* Left Panel */}
-        <div className="booking-panel">
-          <div className="artist-list">
-            {artists.map((artist) => (
-              <div
-                key={artist.id}
-                onClick={() => {
-                  setSelectedArtist(artist);
-                  setSelectedDay(null);
-                }}
-                className={`artist-item ${selectedArtist.id === artist.id ? "selected" : ""}`}
-              >
-                <img src={artist.avatar} alt={artist.name} className="artist-avatar" />
-                <strong>{artist.name}</strong>
-              </div>
-            ))}
-          </div>
-
-          <div className="calendar">
-            <h2>{`${monthName} ${year}`}</h2>
-            <div className="calendar-grid">
-              {["S", "M", "T", "W", "T", "F", "S"].map((d) => (
-                <div key={d} className="calendar-day-label">{d}</div>
-              ))}
-              {Array.from({ length: numDays }, (_, i) => {
-                const day = i + 1;
-                const isAvailable = selectedArtist.availability[day];
-                const isToday = day === today.getDate();
-                const isSelected = day === selectedDay;
-
-                return (
-                  <div
-                    key={day}
-                    className={`calendar-day ${isAvailable ? "available" : ""} ${isToday ? "today" : ""} ${isSelected ? "selected-day" : ""}`}
-                    onClick={() => isAvailable && setSelectedDay(day)}
-                  >
-                    {day}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-
-        {/* Right Panel */}
+        <CalendarPanel
+          artists={artists}
+          selectedArtist={selectedArtist}
+          setSelectedArtist={setSelectedArtist}
+          selectedDay={selectedDay}
+          setSelectedDay={setSelectedDay}
+        />
 
         <BookingForm
           selectedDate={selectedDay ? `${monthName} ${selectedDay}` : undefined}
@@ -135,9 +96,7 @@ export default function LandingPage() {
             alert("Booking submitted!\n" + JSON.stringify(data, null, 2));
           }}
         />
-        {/* )} */}
       </div>
     </div>
   );
-
 }
