@@ -1,27 +1,57 @@
-import React, { useState } from "react";
+// src/TattooBookingApp.tsx
+import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Route, Routes, useNavigate } from "react-router-dom";
 import LandingPage from "./pages/LandingPage/LandingPage";
 import BookingPage from "./pages/BookingPage";
 import ArtistPortal from "./pages/ArtistPortal/ArtistPortal";
 import ArtistLogin from "./pages/Login/LoginPage";
-import Navbar from "./components/Navbar";
 import ArtistRegister from "./pages/Registration/ArtistRegister";
+import Navbar from "./components/Navbar";
+import { supabase } from "./lib/supabase";
 
 export default function TattooBookingApp() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [currentArtist, setCurrentArtist] = useState<string | null>(null);
-  const [registeredArtists, setRegisteredArtists] = useState<
-    { name: string; password: string }[]
-  >([]);
+  const [currentArtistEmail, setCurrentArtistEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    const getSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      const session = data.session;
+      if (session?.user) {
+        setIsAuthenticated(true);
+        setCurrentArtistEmail(session?.user?.email ?? null);
+      } else {
+        setIsAuthenticated(false);
+        setCurrentArtistEmail(null);
+      }
+    };
+
+    getSession();
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        setIsAuthenticated(true);
+        setCurrentArtistEmail(session.user.email ?? null);
+      } else {
+        setIsAuthenticated(false);
+        setCurrentArtistEmail(null);
+      }
+    });
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
+  }, []);
 
   return (
     <Router>
       <Navbar
         isAuthenticated={isAuthenticated}
-        artistName={currentArtist}
-        onLogout={() => {
+        artistName={currentArtistEmail || ""}
+        onLogout={async () => {
+          await supabase.auth.signOut();
           setIsAuthenticated(false);
-          setCurrentArtist(null);
+          setCurrentArtistEmail(null);
         }}
       />
       <Routes>
@@ -40,30 +70,8 @@ export default function TattooBookingApp() {
             )
           }
         />
-        <Route
-          path="/login"
-          element={
-            <ArtistLogin
-              artists={registeredArtists}
-              onLogin={(artistName) => {
-                setCurrentArtist(artistName);
-                setIsAuthenticated(true);
-              }}
-            />
-          }
-        />
-        <Route
-          path="/register"
-          element={
-            <ArtistRegister
-              onRegister={(artistName, password) => {
-                setRegisteredArtists((prev) => [...prev, { name: artistName, password }]);
-                setIsAuthenticated(true);
-                setCurrentArtist(artistName);
-              }}
-            />
-          }
-        />
+        <Route path="/login" element={<ArtistLogin />} />
+        <Route path="/register" element={<ArtistRegister />} />
       </Routes>
     </Router>
   );

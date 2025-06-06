@@ -2,34 +2,27 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../Registration/ArtistRegister.css";
+import { supabase } from "../../lib/supabase";
 
-type Artist = {
-  name: string;
-  password: string;
-};
-
-export default function ArtistLogin({
-  artists,
-  onLogin,
-}: {
-  artists: Artist[];
-  onLogin: (artistName: string) => void;
-}) {
-  const [artistName, setArtistName] = useState("");
+export default function ArtistLogin() {
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const match = artists.find(
-      (a) => a.name === artistName && a.password === password
-    );
-    if (match) {
-      onLogin(artistName);
-      navigate("/artist");
+    setError("");
+
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (signInError) {
+      setError(signInError.message);
     } else {
-      setError("Invalid credentials");
+      navigate("/artist");
     }
   };
 
@@ -38,10 +31,10 @@ export default function ArtistLogin({
       <h2 className="auth-title">Artist Login</h2>
       <form onSubmit={handleSubmit} className="auth-form">
         <input
-          type="text"
-          placeholder="Artist Name"
-          value={artistName}
-          onChange={(e) => setArtistName(e.target.value)}
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           required
         />
         <input
