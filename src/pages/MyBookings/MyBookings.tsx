@@ -84,21 +84,30 @@ export default function MyBookings() {
               <div className="booking-detail-pane-header">
                 <p><strong>Date:</strong> {formatDate(selectedBooking.date)}</p>
                 <p><strong>Email:</strong> {selectedBooking.email}</p>
-                <p><strong>Idea:</strong> {selectedBooking.idea}</p>
+
               </div>
+
               <div className="booking-detail-pane-payment">
-                <p><strong>Payment:</strong> {selectedBooking.payment_method}</p>
-                <p><strong>Code:</strong> {selectedBooking.confirmation_code}</p>
+                <p><strong>Payment method:</strong> {selectedBooking.payment_method}</p>
+                <p><strong>Confirmation code:</strong> {selectedBooking.confirmation_code}</p>
               </div>
             </div>
+            <div className="booking-idea">
+              <strong>Idea:</strong>
+              <p>{selectedBooking.idea}</p>
+            </div>
+
             {selectedBooking.image_url && (
-              <div className="image-gallery">
-                <img
-                  src={selectedBooking.image_url}
-                  alt="Tattoo reference"
-                  className="gallery-image"
-                />
-              </div>
+              <>
+                <p><strong>Reference Images: </strong></p>
+                <div className="image-gallery">
+                  <img
+                    src={selectedBooking.image_url}
+                    alt="Tattoo reference"
+                    className="gallery-image"
+                  />
+                </div>
+              </>
             )}
 
           </>

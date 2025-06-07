@@ -69,6 +69,7 @@
   margin-top: 2px;
 }
 
+
 /* Right pane (Details) */
 .booking-detail-pane {
   flex: 1;
@@ -94,24 +95,52 @@
   margin-bottom: 0.5rem;
 }
 
+.booking-idea {
+  margin-top: 1rem;
+  font-size: 1rem;
+  color: #1f2937;
+  white-space: pre-wrap; /* preserves line breaks */
+  word-break: break-word; /* prevents overflow */
+  line-height: 1.6;
+  max-width: 100%;
+}
+
+.booking-idea p{
+  border:1px solid #e5e7eb;
+  border-radius: 5px;
+  padding: 1rem;
+  margin: 5px 0;
+  height: 120px;
+  overflow-y: scroll;
+}
+
 .booking-detail-pane-payment,
 .booking-detail-pane-header {
   width: 100%;
 }
 
 .image-gallery {
-  display: flex;
-  gap: 1rem;
-  margin-top: 1.5rem;
+ display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
   overflow-x: auto;
+  padding-bottom: 0.5rem;
 }
-
+/* 
 .image-gallery img {
   max-height: 300px;
   border-radius: 10px;
   border: 1px solid rgba(0, 0, 0, 0.7);
   padding: 0.4rem;
   object-fit: cover;
+} */
+
+.gallery-image {
+  height: 200px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
 }
 
 /* ------------------ RESPONSIVE BREAKPOINTS ------------------ */
