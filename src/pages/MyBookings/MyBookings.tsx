@@ -10,10 +10,12 @@ type Booking = {
   idea: string;
   payment_method: string;
   confirmation_code: string;
+  image_url?: string;
 };
 
 export default function MyBookings() {
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -22,16 +24,22 @@ export default function MyBookings() {
         data: { user },
         error: authError,
       } = await supabase.auth.getUser();
-      if (authError || !user) return;
+
+      if (authError || !user) {
+        setBookings([]);
+        setLoading(false);
+        return;
+      }
 
       const { data, error } = await supabase
         .from("bookings")
         .select("*")
         .eq("artist_email", user.email)
         .order("date", { ascending: true });
-      console.log("Fetched bookings:", data);
+
       if (!error && data) {
         setBookings(data);
+        setSelectedBooking(data[0] || null); // auto-select first
       }
 
       setLoading(false);
@@ -42,7 +50,7 @@ export default function MyBookings() {
 
   const formatDate = (dateString: string) => {
     const [year, month, day] = dateString.split("-").map(Number);
-    const localDate = new Date(year, month - 1, day); // month is 0-indexed
+    const localDate = new Date(year, month - 1, day); // fix offset
     return localDate.toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
@@ -50,33 +58,46 @@ export default function MyBookings() {
     });
   };
 
-
   return (
-    <div className="my-bookings-container">
-      <h2 className="my-bookings-title">🎯 My Confirmed Bookings</h2>
-
-      {loading ? (
-        <p className="loading">Loading...</p>
-      ) : bookings.length === 0 ? (
-        <p className="no-bookings">No bookings yet.</p>
-      ) : (
-        <div className="bookings-list">
+    <div className="bookings-wrapper">
+      <div className="bookings-list-pane">
+        <h2>My Bookings</h2>
+        <ul className="booking-list">
           {bookings.map((b) => (
-            <div key={b.id} className="booking-card">
-              <div className="booking-header">
-                <span className="booking-date">Date: {formatDate(b.date)}</span>
-                <span className="booking-name">Name: {b.customer_name}</span>
+            <li
+              key={b.id}
+              className={`booking-item ${selectedBooking?.id === b.id ? "selected" : ""}`}
+              onClick={() => setSelectedBooking(b)}
+            >
+              <strong>{b.customer_name}</strong>
+              <span className="booking-date">{formatDate(b.date)}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="booking-detail-pane">
+        {selectedBooking ? (
+          <>
+            <h3>{selectedBooking.customer_name}</h3>
+            <div className="booking-detail-pane-info">
+              <div className="booking-detail-pane-header">
+                <p><strong>Date:</strong> {formatDate(selectedBooking.date)}</p>
+                <p><strong>Email:</strong> {selectedBooking.email}</p>
+                <p><strong>Idea:</strong> {selectedBooking.idea}</p>
               </div>
-              <p className="booking-email">Customer email: {b.email}</p>
-              <p className="booking-idea">Tattoo Idea: {b.idea}</p>
-              <div className="booking-footer">
-                <span>💰 Payment Method: {b.payment_method}</span>
-                <span>✅ Code: {b.confirmation_code}</span>
+              <div className="booking-detail-pane-payment">
+                <p><strong>Payment:</strong> {selectedBooking.payment_method}</p>
+                <p><strong>Code:</strong> {selectedBooking.confirmation_code}</p>
               </div>
             </div>
-          ))}
-        </div>
-      )}
+            {/* image gallery here */}
+          </>
+        ) : (
+          <p>Select a booking to view details.</p>
+        )}
+      </div>
     </div>
   );
+
 }
