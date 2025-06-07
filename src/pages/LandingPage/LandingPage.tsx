@@ -1,7 +1,7 @@
 // src/pages/LandingPage.tsx
 import React, { useState } from "react";
 import "./LandingPage.css";
-import BookingForm from "../../components/BookingForm/BookingForm";
+import BookingForm, { BookingData } from "../../components/BookingForm/BookingForm";
 import CalendarPanel from "../../components/CalendarPanel/CalendarPanel";
 import { supabase } from "../../lib/supabase";
 import { useNavigate } from "react-router-dom";
@@ -19,46 +19,59 @@ type Artist = {
 export default function LandingPage() {
   const [selectedArtist, setSelectedArtist] = useState<Artist | null>(null);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
-  const navigate = useNavigate();
+  const [resetFormFlag, setResetFormFlag] = useState(false);
 
   const today = new Date();
   const year = today.getFullYear();
   const month = today.getMonth();
   const monthName = today.toLocaleString("default", { month: "long" });
 
-  const handleBookingSubmit = async (formData: {
-    name: string;
-    email: string;
-    idea: string;
-    paymentMethod: string;
-    confirmationCode: string;
-  }) => {
+  const handleBookingSubmit = async (formData: BookingData) => {
     if (!selectedArtist || !selectedDay) {
       toast.error("Please select an artist and date.");
       return;
     }
 
-    const bookingDate = new Date(year, month, selectedDay).toISOString().split("T")[0];
+    let imageUrl = "";
 
-    // Check for duplicate booking
-    const { data: existing, error: checkError } = await supabase
-      .from("bookings")
-      .select("*")
-      .eq("email", formData.email)
-      .eq("artist_id", selectedArtist.id)
-      .eq("date", bookingDate);
+    if (formData.imageFile) {
+      try {
+        const fileExt = formData.imageFile.name.split(".").pop();
+        const fileName = `${Date.now()}.${fileExt}`;
+        const filePath = `uploads/${fileName}`;
 
-    if (checkError) {
-      toast.error("Error checking existing bookings: " + checkError.message);
-      return;
+        const { data: storageData, error: uploadError } = await supabase
+          .storage
+          .from("booking-images")
+          .upload(filePath, formData.imageFile);
+
+        if (uploadError) {
+          console.error("Upload error:", uploadError.message);
+          toast.error("Failed to upload image.");
+          return;
+        }
+
+        const { data: publicUrlData } = supabase
+          .storage
+          .from("booking-images")
+          .getPublicUrl(filePath);
+
+        if (!publicUrlData?.publicUrl) {
+          toast.error("Failed to get image URL.");
+          return;
+        }
+
+        imageUrl = publicUrlData.publicUrl;
+      } catch (err) {
+        console.error("Image upload exception:", err);
+        toast.error("Unexpected error during image upload.");
+        return;
+      }
     }
 
-    if (existing && existing.length > 0) {
-      toast.error("You already booked this artist on that day.");
-      return;
-    }
+    const today = new Date();
+    const bookingDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(selectedDay).padStart(2, "0")}`;
 
-    // Insert new booking
     const { error } = await supabase.from("bookings").insert({
       artist_id: selectedArtist.id,
       artist_name: selectedArtist.name,
@@ -68,14 +81,19 @@ export default function LandingPage() {
       idea: formData.idea,
       payment_method: formData.paymentMethod,
       confirmation_code: formData.confirmationCode,
+      image_url: imageUrl,
     });
 
     if (error) {
+      console.error("Insert error:", error.message);
       toast.error("Booking failed: " + error.message);
     } else {
       toast.success("Booking confirmed!");
+      setResetFormFlag(true); // Trigger reset
+      setTimeout(() => setResetFormFlag(false), 500); // Clear the signal
     }
   };
+
 
   return (
     <div className="landing-container">
@@ -98,6 +116,7 @@ export default function LandingPage() {
           selectedDate={selectedDay ? `${monthName} ${selectedDay}` : undefined}
           artistName={selectedArtist?.name ?? ""}
           onSubmit={handleBookingSubmit}
+          resetSignal={resetFormFlag}
         />
       </div>
     </div>

@@ -33,8 +33,9 @@ export default function Navbar() {
     const { error } = await supabase.auth.signOut();
     if (!error) {
       toast.success("You have been logged out.");
+
       setIsLoggedIn(false);
-      setTimeout(() => navigate("/"), 0);
+      navigate("/");
     } else {
       toast.error("Logout failed: " + error.message);
     }
@@ -63,7 +64,6 @@ export default function Navbar() {
           )}
         </div>
       </nav>
-      <ToastContainer position="top-center" autoClose={1500} />
     </>
 
   );

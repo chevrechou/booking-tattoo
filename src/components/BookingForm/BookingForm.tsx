@@ -7,20 +7,23 @@ type BookingFormProps = {
   selectedDate?: string;
   artistName?: string;
   onSubmit: (data: BookingData) => void;
+  resetSignal?: boolean;
 };
 
-type BookingData = {
+export type BookingData = {
   name: string;
   email: string;
   idea: string;
   paymentMethod: string;
   confirmationCode: string;
+  imageFile?: File | null;
 };
 
 export default function BookingForm({
   selectedDate,
   onSubmit,
   artistName,
+  resetSignal = false,
 }: BookingFormProps) {
   const [step, setStep] = useState(1);
   const [selectedArtistName, setSelectedArtistName] = useState(artistName);
@@ -31,17 +34,40 @@ export default function BookingForm({
     idea: "",
     paymentMethod: "",
     confirmationCode: "",
+    imageFile: null,
   });
 
   useEffect(() => {
     setSelectedArtistName(artistName);
   }, [artistName]);
 
+  useEffect(() => {
+  if (resetSignal) {
+    setStep(1);
+    setFormData({
+      name: "",
+      email: "",
+      idea: "",
+      paymentMethod: "",
+      confirmationCode: "",
+    });
+  }
+}, [resetSignal]);
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setFormData((prev) => ({
+        ...prev,
+        imageFile: e.target.files![0],
+      }));
+    }
   };
 
   const handleNext = () => {
@@ -110,6 +136,14 @@ export default function BookingForm({
               onChange={handleChange}
               rows={4}
               required
+            />
+          </label>
+          <label>
+            Reference Image (optional)
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
             />
           </label>
           <div className="step-buttons">

@@ -41,7 +41,6 @@ export default function CalendarPanel({
       if (error) {
         console.error("❌ Error fetching artists:", error);
       } else {
-        console.log("✅ Fetched artists:", data);
         setArtists(data || []);
         if (!selectedArtist && data?.length) {
           setSelectedArtist(data[0]);
@@ -64,7 +63,6 @@ export default function CalendarPanel({
       }
 
       const availabilityByArtist: { [artistId: string]: Availability } = {};
-      console.log("✅ Fetched availability data:", data);
       data?.forEach((slot) => {
         if (slot.year === year && slot.month === monthIndex + 1) {
           if (!availabilityByArtist[slot.artist_id]) {
@@ -73,8 +71,6 @@ export default function CalendarPanel({
           availabilityByArtist[slot.artist_id][slot.day] = true;
         }
       });
-
-      console.log("✅ Parsed availability map:", availabilityByArtist);
       setAvailabilityMap(availabilityByArtist);
       setLoadingAvailability(false);
     };

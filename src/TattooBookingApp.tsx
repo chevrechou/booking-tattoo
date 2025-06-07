@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Route, Routes, useNavigate } from "react-router-dom";
 import LandingPage from "./pages/LandingPage/LandingPage";
-import BookingPage from "./pages/BookingPage";
 import ArtistPortal from "./pages/ArtistPortal/ArtistPortal";
 import ArtistLogin from "./pages/Login/LoginPage";
 import ArtistRegister from "./pages/Registration/ArtistRegister";
@@ -47,11 +46,10 @@ export default function TattooBookingApp() {
 
   return (
     <Router>
-      <ToastContainer />
+      <ToastContainer position="top-center" autoClose={1500} />
       <Navbar />
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/booking" element={<BookingPage />} />
         <Route
           path="/my-calendar"
           element={
