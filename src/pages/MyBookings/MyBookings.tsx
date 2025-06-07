@@ -29,7 +29,7 @@ export default function MyBookings() {
         .select("*")
         .eq("artist_email", user.email)
         .order("date", { ascending: true });
-
+      console.log("Fetched bookings:", data);
       if (!error && data) {
         setBookings(data);
       }
@@ -41,13 +41,15 @@ export default function MyBookings() {
   }, []);
 
   const formatDate = (dateString: string) => {
-    const formattedDate = new Date(dateString).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  })
-  return formattedDate
-}
+    const [year, month, day] = dateString.split("-").map(Number);
+    const localDate = new Date(year, month - 1, day); // month is 0-indexed
+    return localDate.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
 
   return (
     <div className="my-bookings-container">

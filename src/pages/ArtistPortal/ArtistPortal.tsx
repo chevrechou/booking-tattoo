@@ -135,9 +135,9 @@ export default function ArtistPortal() {
         ))}
 
         {Array.from({ length: 30 }, (_, i) => {
-          const day = i + 1;
-          const hasBooking = bookedDays.includes(day);
-
+          const day = i+1;
+          const hasBooking = bookedDays.includes(day-1);
+          console.log(`Day: ${day}, Has Booking: ${hasBooking}`);
           return (
             <button
               key={day}

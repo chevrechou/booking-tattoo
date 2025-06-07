@@ -14,7 +14,9 @@ type Artist = {
   name: string;
   avatar_url: string;
   availability?: Availability;
+  email?: string; // Assuming artist has an email field
 };
+
 
 export default function LandingPage() {
   const [selectedArtist, setSelectedArtist] = useState<Artist | null>(null);
@@ -75,6 +77,7 @@ export default function LandingPage() {
     const { error } = await supabase.from("bookings").insert({
       artist_id: selectedArtist.id,
       artist_name: selectedArtist.name,
+      artist_email: selectedArtist.email, // Assuming artist has an email field
       date: bookingDate,
       customer_name: formData.name,
       email: formData.email,
