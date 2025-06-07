@@ -109,7 +109,8 @@
 .image-gallery img {
   max-height: 300px;
   border-radius: 10px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid rgba(0, 0, 0, 0.7);
+  padding: 0.4rem;
   object-fit: cover;
 }
 

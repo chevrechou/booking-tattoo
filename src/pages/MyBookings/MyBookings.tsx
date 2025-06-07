@@ -91,7 +91,16 @@ export default function MyBookings() {
                 <p><strong>Code:</strong> {selectedBooking.confirmation_code}</p>
               </div>
             </div>
-            {/* image gallery here */}
+            {selectedBooking.image_url && (
+              <div className="image-gallery">
+                <img
+                  src={selectedBooking.image_url}
+                  alt="Tattoo reference"
+                  className="gallery-image"
+                />
+              </div>
+            )}
+
           </>
         ) : (
           <p>Select a booking to view details.</p>
