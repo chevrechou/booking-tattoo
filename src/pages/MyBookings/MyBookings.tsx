@@ -1,6 +1,6 @@
-// src/pages/MyBookings/MyBookings.tsx
 import React, { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
+import "./MyBookings.css";
 
 type Booking = {
   id: number;
@@ -14,44 +14,66 @@ type Booking = {
 
 export default function MyBookings() {
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchBookings = async () => {
       const {
         data: { user },
+        error: authError,
       } = await supabase.auth.getUser();
-
-      if (!user) return;
+      if (authError || !user) return;
 
       const { data, error } = await supabase
         .from("bookings")
         .select("*")
-        .eq("artist_id", user.id)
+        .eq("artist_email", user.email)
         .order("date", { ascending: true });
 
       if (!error && data) {
         setBookings(data);
       }
+
+      setLoading(false);
     };
 
     fetchBookings();
   }, []);
 
+  const formatDate = (dateString: string) => {
+    const formattedDate = new Date(dateString).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  })
+  return formattedDate
+}
+
   return (
-    <div style={{ padding: "2rem" }}>
-      <h2>My Confirmed Bookings</h2>
-      {bookings.length === 0 ? (
-        <p>No bookings yet.</p>
+    <div className="my-bookings-container">
+      <h2 className="my-bookings-title">🎯 My Confirmed Bookings</h2>
+
+      {loading ? (
+        <p className="loading">Loading...</p>
+      ) : bookings.length === 0 ? (
+        <p className="no-bookings">No bookings yet.</p>
       ) : (
-        <ul>
+        <div className="bookings-list">
           {bookings.map((b) => (
-            <li key={b.id} style={{ marginBottom: "1rem" }}>
-              <strong>{b.date}</strong> - {b.customer_name} ({b.email})<br />
-              <em>{b.idea}</em><br />
-              Payment: {b.payment_method} | Code: {b.confirmation_code}
-            </li>
+            <div key={b.id} className="booking-card">
+              <div className="booking-header">
+                <span className="booking-date">Date: {formatDate(b.date)}</span>
+                <span className="booking-name">Name: {b.customer_name}</span>
+              </div>
+              <p className="booking-email">Customer email: {b.email}</p>
+              <p className="booking-idea">Tattoo Idea: {b.idea}</p>
+              <div className="booking-footer">
+                <span>💰 Payment Method: {b.payment_method}</span>
+                <span>✅ Code: {b.confirmation_code}</span>
+              </div>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
     </div>
   );

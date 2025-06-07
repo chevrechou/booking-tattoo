@@ -1,4 +1,4 @@
-/* Main container */
+/* Container */
 .artist-container {
   padding: 2rem;
   max-width: 960px;
@@ -20,7 +20,6 @@
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 0.5rem;
-  margin-bottom: 2rem;
 }
 
 @media (max-width: 768px) {
@@ -37,14 +36,15 @@
 
 /* Weekday labels */
 .weekday-label {
-  font-weight: 600;
-  font-size: 0.9rem;
+  font-weight: 500;
   text-align: center;
-  color: #6b7280;
+  margin-bottom: 0.25rem;
+  color: #4b5563;
 }
 
-/* Calendar buttons */
+/* Calendar day buttons */
 .day-button {
+  position: relative;
   width: 100%;
   aspect-ratio: 1 / 1;
   background-color: #f3f4f6;
@@ -58,41 +58,51 @@
 }
 
 .day-button:hover {
-  background-color: #c1c2c5;
-  border-color: #9a9da1;
+  background-color: #e5e7eb;
+  border-color: #d1d5db;
 }
 
-/* Selected but not yet confirmed */
 .day-button.selected {
-  background-color: #3b82f6; /* blue */
+  background-color: #3b82f6;
   color: white;
   border-color: #2563eb;
 }
 
-/* Confirmed from DB */
 .day-button.confirmed {
-  background-color: #10b981; /* green */
+  background-color: #10b981;
   color: white;
   border-color: #059669;
 }
 
-/* Past day */
+.day-button.pending-delete {
+  background-color: #f43f5e;
+  color: white;
+  border-color: #e11d48;
+}
+
 .day-button.disabled {
   background-color: #f9fafb;
-  opacity: 0.6;
   color: #9ca3af;
   cursor: not-allowed;
 }
 
-.day-button.pending-delete {
-  background-color: #ef4444;
+/* Booking label (badge inside day button) */
+.booking-label {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  background-color: #f43f5e;
   color: white;
-  border-color: #dc2626;
+  font-size: 0.6rem;
+  padding: 2px 5px;
+  border-radius: 4px;
+  font-weight: bold;
+  pointer-events: none;
 }
 
 /* Confirmation section */
 .confirmation-box {
-  margin-top: 1rem;
+  margin-top: 2rem;
   padding: 1.25rem;
   background-color: #f9fafb;
   border: 1px solid #e5e7eb;
@@ -101,31 +111,41 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
 }
 
-/* Buttons */
-.confirm-btn,
-.delete-btn {
+.confirmation-box p {
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+  color: #374151;
+}
+
+/* Confirm button */
+.confirm-btn {
   padding: 0.6rem 1.25rem;
   font-size: 1rem;
+  background-color: #10b981;
+  color: white;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   font-weight: 600;
-  margin: 0.5rem;
+  margin-right: 0.75rem;
   transition: background-color 0.2s ease;
-}
-
-.confirm-btn {
-  background-color: #10b981;
-  color: white;
 }
 
 .confirm-btn:hover {
   background-color: #059669;
 }
 
+/* Delete button */
 .delete-btn {
+  padding: 0.6rem 1.25rem;
+  font-size: 1rem;
   background-color: #ef4444;
   color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
 }
 
 .delete-btn:hover {

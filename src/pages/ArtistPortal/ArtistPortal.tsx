@@ -9,6 +9,7 @@ export default function ArtistPortal() {
   const currentYear = today.getFullYear();
 
   const [confirmedDays, setConfirmedDays] = useState<number[]>([]);
+  const [bookedDays, setBookedDays] = useState<number[]>([]);
   const [newlySelectedDays, setNewlySelectedDays] = useState<number[]>([]);
   const [markedForDeletionDays, setMarkedForDeletionDays] = useState<number[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
@@ -19,18 +20,36 @@ export default function ArtistPortal() {
       if (userError || !userData.user) return;
 
       const uid = userData.user.id;
+      const artist_email = userData.user.email;
       setUserId(uid);
 
-      const { data, error } = await supabase
-        .from("availability")
-        .select("day")
-        .eq("artist_id", uid)
-        .eq("month", currentMonth)
-        .eq("year", currentYear);
+      const [availRes, bookingRes] = await Promise.all([
+        supabase
+          .from("availability")
+          .select("day")
+          .eq("artist_id", uid)
+          .eq("month", currentMonth)
+          .eq("year", currentYear),
 
-      if (!error && data) {
-        const saved = data.map((d) => d.day);
+        supabase
+          .from("bookings")
+          .select("date")
+          .eq("artist_email", artist_email),
+      ]);
+      console.log('bookingRes:', bookingRes);
+
+      if (!availRes.error && availRes.data) {
+        const saved = availRes.data.map((d) => d.day);
         setConfirmedDays(saved);
+      }
+
+      if (!bookingRes.error && bookingRes.data) {
+        const daysWithBookings = bookingRes.data
+          .map((b) => new Date(b.date))
+          .filter((d) => d.getMonth() + 1 === currentMonth && d.getFullYear() === currentYear)
+          .map((d) => d.getDate());
+        setBookedDays(daysWithBookings);
+        console.log("Booked days:", daysWithBookings);
       }
     };
 
@@ -40,15 +59,15 @@ export default function ArtistPortal() {
   const toggleDay = (day: number) => {
     if (confirmedDays.includes(day)) {
       if (markedForDeletionDays.includes(day)) {
-        setMarkedForDeletionDays((prev) => prev.filter((d) => d !== day)); // unmark
+        setMarkedForDeletionDays((prev) => prev.filter((d) => d !== day));
       } else {
-        setMarkedForDeletionDays((prev) => [...prev, day]); // mark for deletion
+        setMarkedForDeletionDays((prev) => [...prev, day]);
       }
     } else {
       if (newlySelectedDays.includes(day)) {
-        setNewlySelectedDays((prev) => prev.filter((d) => d !== day)); // unselect
+        setNewlySelectedDays((prev) => prev.filter((d) => d !== day));
       } else {
-        setNewlySelectedDays((prev) => [...prev, day]); // new selection
+        setNewlySelectedDays((prev) => [...prev, day]);
       }
     }
   };
@@ -117,6 +136,8 @@ export default function ArtistPortal() {
 
         {Array.from({ length: 30 }, (_, i) => {
           const day = i + 1;
+          const hasBooking = bookedDays.includes(day);
+
           return (
             <button
               key={day}
@@ -125,6 +146,7 @@ export default function ArtistPortal() {
               disabled={day < currentDay}
             >
               {day}
+              {hasBooking && <span className="booking-label">Booked</span>}
             </button>
           );
         })}
