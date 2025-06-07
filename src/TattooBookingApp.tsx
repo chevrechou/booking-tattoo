@@ -6,8 +6,10 @@ import BookingPage from "./pages/BookingPage";
 import ArtistPortal from "./pages/ArtistPortal/ArtistPortal";
 import ArtistLogin from "./pages/Login/LoginPage";
 import ArtistRegister from "./pages/Registration/ArtistRegister";
-import Navbar from "./components/Navbar";
+import Navbar from "./components/Navbar/Navbar";
 import { supabase } from "./lib/supabase";
+import MyBookings from "./pages/MyBookings/MyBookings";
+import { ToastContainer } from "react-toastify";
 
 export default function TattooBookingApp() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -45,20 +47,13 @@ export default function TattooBookingApp() {
 
   return (
     <Router>
-      <Navbar
-        isAuthenticated={isAuthenticated}
-        artistName={currentArtistEmail || ""}
-        onLogout={async () => {
-          await supabase.auth.signOut();
-          setIsAuthenticated(false);
-          setCurrentArtistEmail(null);
-        }}
-      />
+      <ToastContainer />
+      <Navbar />
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/booking" element={<BookingPage />} />
         <Route
-          path="/artist"
+          path="/my-calendar"
           element={
             isAuthenticated ? (
               <ArtistPortal />
@@ -66,6 +61,19 @@ export default function TattooBookingApp() {
               <div style={{ padding: "2rem", textAlign: "center" }}>
                 <h2>Access Denied</h2>
                 <p>Please log in to access the artist portal.</p>
+              </div>
+            )
+          }
+        />
+        <Route
+          path="/my-bookings"
+          element={
+            isAuthenticated ? (
+              <MyBookings />
+            ) : (
+              <div style={{ padding: "2rem", textAlign: "center" }}>
+                <h2>Access Denied</h2>
+                <p>Please log in to access your bookings.</p>
               </div>
             )
           }

@@ -1,0 +1,46 @@
+/* Navbar.css */
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #1f2937; /* Dark navy */
+  padding: 1rem 2rem;
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.nav-left .nav-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+}
+
+.nav-link {
+  color: #ffffff;
+  margin-left: 1.5rem;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+  color: #d1d5db; /* Light gray on hover */
+  text-decoration: underline;
+}
+
+button.nav-link {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+}

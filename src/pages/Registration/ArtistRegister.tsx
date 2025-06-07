@@ -1,5 +1,4 @@
-// src/pages/ArtistRegister.tsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 
@@ -12,22 +11,36 @@ export default function ArtistRegister() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Sign up the artist
-    const { data: authData, error: authError } = await supabase.auth.signUp({
+    // Step 1: Sign up with Supabase auth
+    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
     });
 
-    if (authError) {
-      alert("Registration failed: " + authError.message);
+    if (signUpError) {
+      alert("Registration failed: " + signUpError.message);
       return;
     }
 
-    // Insert into artists table
+    const userId = signUpData.user?.id;
+
+    // Wait for user session to persist
+    const {
+      data: { user },
+      error: sessionError,
+    } = await supabase.auth.getUser();
+
+    if (sessionError || !user) {
+      alert("User session not established yet. Try logging in.");
+      return;
+    }
+
+    // Step 2: Insert user into `artists` table
     const { error: insertError } = await supabase.from("artists").insert({
+      id: user.id, // ✅ foreign key from auth.users
       name: artistName,
-      email,
-      avatar_url: `https://i.pravatar.cc/40?u=${artistName}`
+      email: user.email,
+      avatar_url: `https://i.pravatar.cc/40?u=${artistName}`,
     });
 
     if (insertError) {
@@ -35,7 +48,8 @@ export default function ArtistRegister() {
       return;
     }
 
-    navigate("/artist"); // redirect after success
+    // Step 3: Redirect to portal
+    navigate("/my-calendar");
   };
 
   return (

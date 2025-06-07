@@ -1,6 +1,7 @@
 // src/components/BookingForm.tsx
 import React, { useState, useEffect } from "react";
 import "./BookingForm.css";
+import { toast } from "react-toastify";
 
 type BookingFormProps = {
   selectedDate?: string;
@@ -33,7 +34,6 @@ export default function BookingForm({
   });
 
   useEffect(() => {
-    console.log("Artist name changed:", artistName);
     setSelectedArtistName(artistName);
   }, [artistName]);
 
@@ -44,7 +44,22 @@ export default function BookingForm({
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleNext = () => setStep((prev) => prev + 1);
+  const handleNext = () => {
+    if (step === 1 && (!formData.name || !formData.email)) {
+      toast.error("Please enter your name and email.");
+      return;
+    }
+    if (step === 2 && !formData.idea) {
+      toast.error("Please describe your tattoo idea.");
+      return;
+    }
+    if (step === 3 && (!formData.paymentMethod || !formData.confirmationCode)) {
+      toast.error("Please enter payment method and confirmation code.");
+      return;
+    }
+    setStep((prev) => prev + 1);
+  };
+
   const handleBack = () => setStep((prev) => prev - 1);
 
   const handleFinalSubmit = () => {
@@ -54,7 +69,7 @@ export default function BookingForm({
   return (
     <div className="form-panel">
       <h3>
-        {selectedArtistName 
+        {selectedArtistName
           ? `Booking with ${selectedArtistName} ${selectedDate ? `on ${selectedDate}` : ""}`
           : "Select your artist and date"}
       </h3>
@@ -128,7 +143,26 @@ export default function BookingForm({
           </label>
           <div className="step-buttons">
             <button onClick={handleBack}>Back</button>
-            <button onClick={handleFinalSubmit}>Submit</button>
+            <button onClick={handleNext}>Review</button>
+          </div>
+        </div>
+      )}
+
+      {step === 4 && (
+        <div className="form-step">
+          <h4>Review Your Booking</h4>
+          <ul className="summary-list">
+            <li><strong>Artist:</strong> {selectedArtistName}</li>
+            <li><strong>Date:</strong> {selectedDate}</li>
+            <li><strong>Name:</strong> {formData.name}</li>
+            <li><strong>Email:</strong> {formData.email}</li>
+            <li><strong>Idea:</strong> {formData.idea}</li>
+            <li><strong>Payment:</strong> {formData.paymentMethod}</li>
+            <li><strong>Code:</strong> {formData.confirmationCode}</li>
+          </ul>
+          <div className="step-buttons">
+            <button onClick={handleBack}>Back to Edit</button>
+            <button onClick={handleFinalSubmit}>Submit Booking</button>
           </div>
         </div>
       )}

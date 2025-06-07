@@ -22,7 +22,7 @@ export default function ArtistLogin() {
     if (signInError) {
       setError(signInError.message);
     } else {
-      navigate("/artist");
+      navigate("/my-calendar");
     }
   };
 
