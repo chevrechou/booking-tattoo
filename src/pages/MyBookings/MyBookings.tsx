@@ -36,7 +36,7 @@ export default function MyBookings() {
         .select("*")
         .eq("artist_email", user.email)
         .order("date", { ascending: true });
-
+      console.log(data)
       if (!error && data) {
         setBookings(data);
         setSelectedBooking(data[0] || null); // auto-select first
