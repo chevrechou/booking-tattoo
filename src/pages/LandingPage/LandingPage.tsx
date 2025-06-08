@@ -1,22 +1,11 @@
 // src/pages/LandingPage.tsx
 import React, { useState } from "react";
 import "./LandingPage.css";
-import BookingForm, { BookingData } from "../../components/BookingForm/BookingForm";
+import BookingForm from "../../components/BookingForm/BookingForm";
 import CalendarPanel from "../../components/CalendarPanel/CalendarPanel";
 import { supabase } from "../../lib/supabase";
-import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-
-type Availability = { [day: number]: boolean };
-
-type Artist = {
-  id: string;
-  name: string;
-  avatar_url: string;
-  availability?: Availability;
-  email?: string; // Assuming artist has an email field
-};
-
+import { Artist, BookingFormData } from "../../components/shared/types";
 
 export default function LandingPage() {
   const [selectedArtist, setSelectedArtist] = useState<Artist | null>(null);
@@ -28,7 +17,7 @@ export default function LandingPage() {
   const month = today.getMonth();
   const monthName = today.toLocaleString("default", { month: "long" });
 
-  const handleBookingSubmit = async (formData: BookingData) => {
+  const handleBookingSubmit = async (formData: BookingFormData) => {
     if (!selectedArtist || !selectedDay) {
       toast.error("Please select an artist and date.");
       return;

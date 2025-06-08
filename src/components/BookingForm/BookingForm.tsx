@@ -2,22 +2,7 @@
 import React, { useState, useEffect } from "react";
 import "./BookingForm.css";
 import { toast } from "react-toastify";
-
-type BookingFormProps = {
-  selectedDate?: string;
-  artistName?: string;
-  onSubmit: (data: BookingData) => void;
-  resetSignal?: boolean;
-};
-
-export type BookingData = {
-  name: string;
-  email: string;
-  idea: string;
-  paymentMethod: string;
-  confirmationCode: string;
-  imageFile?: File | null;
-};
+import { BookingFormData, BookingFormProps } from "../shared/types";
 
 export default function BookingForm({
   selectedDate,
@@ -28,7 +13,7 @@ export default function BookingForm({
   const [step, setStep] = useState(1);
   const [selectedArtistName, setSelectedArtistName] = useState(artistName);
 
-  const [formData, setFormData] = useState<BookingData>({
+  const [formData, setFormData] = useState<BookingFormData>({
     name: "",
     email: "",
     idea: "",

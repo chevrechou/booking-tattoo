@@ -1,16 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
 import "./CalendarPanel.css";
-
-export type Availability = { [day: number]: boolean };
-
-export type Artist = {
-  id: string;
-  name: string;
-  avatar_url: string;
-  availability?: Availability;
-  email?: string;
-};
+import { Artist, Availability } from "../shared/types";
 
 export default function CalendarPanel({
   selectedArtist,

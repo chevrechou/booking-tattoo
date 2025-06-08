@@ -1,17 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
 import "./MyBookings.css";
-
-type Booking = {
-  id: number;
-  date: string;
-  customer_name: string;
-  email: string;
-  idea: string;
-  payment_method: string;
-  confirmation_code: string;
-  image_url?: string;
-};
+import { Booking } from "../../components/shared/types";
 
 export default function MyBookings() {
   const [bookings, setBookings] = useState<Booking[]>([]);
